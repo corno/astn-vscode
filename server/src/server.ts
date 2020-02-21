@@ -161,18 +161,18 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			text,
 			".",
 			(errorMessage, range) => {
-				connection.console.log('fubar')
+				connection.console.log('server-fubar')
 
 				diagnostics.push(addDiagnostic(errorMessage, textDocument.uri, DiagnosticSeverity.Error, textDocument.positionAt(range.start.position), textDocument.positionAt(range.end.position)))
 			},
 			(warningMessage, range) => {
-				connection.console.log('fubar')
+				connection.console.log('server-fubar')
 
 				diagnostics.push(addDiagnostic(warningMessage, textDocument.uri, DiagnosticSeverity.Warning, textDocument.positionAt(range.start.position), textDocument.positionAt(range.end.position)))
 			}
 		)
 	} catch (e) {
-		connection.console.log('fubar')
+		connection.console.log('server-fubar')
 		diagnostics.push(addDiagnostic(`uncaught mrshl exception: ${e.message}`, textDocument.uri, DiagnosticSeverity.Error, textDocument.positionAt(0), textDocument.positionAt(text.length)))
 	}
 

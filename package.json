@@ -21,7 +21,7 @@
 	"activationEvents": [
 		"onLanguage:astn"
 	],
-	"main": "./client/out/extension",
+	"main": "./out/client/extension",
 	"contributes": {
 		"languages": [
 			{
@@ -74,6 +74,16 @@
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
 		"test": "sh ./scripts/e2e.sh"
 	},
-	"devDependencies": {},
-	"dependencies": {}
+	"devDependencies": {
+		"@types/node": "^13.7.4",
+		"@types/mocha": "^5.2.7",
+		"vscode": "^1.1.35",
+		"tslint": "^5.20.1",
+		"typescript": "^3.7.5"
+	},
+	"dependencies": {
+		"mrshl": "^0.1.9",
+		"vscode-languageclient": "^5.2.1",
+		"vscode-languageserver": "^5.2.1"
+	}
 }

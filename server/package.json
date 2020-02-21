@@ -11,12 +11,5 @@
 		"type": "git",
 		"url": "https://github.com/corno/astn-vscode-language-server"
 	},
-	"dependencies": {
-		"vscode-languageserver": "^5.2.1",
-		"mrshl": "^0.1.9"
-	},
-	"scripts": {},
-	"devDependencies": {
-		"@types/node": "^13.7.4"
-	}
+	"scripts": {}
 }
