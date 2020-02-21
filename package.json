@@ -3,7 +3,7 @@
 	"description": "language support for ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
 	"author": "corno",
 	"license": "MIT",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/corno/astn-vscode"
@@ -74,8 +74,6 @@
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
 		"test": "sh ./scripts/e2e.sh"
 	},
-	"devDependencies": {
-	},
-	"dependencies": {
-	}
+	"devDependencies": {},
+	"dependencies": {}
 }
