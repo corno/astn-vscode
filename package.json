@@ -1,0 +1,84 @@
+{
+	"name": "astn",
+	"description": "language support for ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
+	"author": "corno",
+	"license": "MIT",
+	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/corno/astn-vscode"
+	},
+	"publisher": "mrshl",
+	"categories": [],
+	"keywords": [
+		"multi-root ready"
+	],
+	"engines": {
+		"vscode": "^1.33.0"
+	},
+	"activationEvents": [
+		"onLanguage:astn"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+        "languages": [
+            {
+                "id": "astn",
+                "aliases": [
+                    "astn",
+                    "astn"
+                ],
+                "extensions": [
+                    ".astn"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "astn",
+                "scopeName": "source.astn",
+                "path": "./syntaxes/astn.tmLanguage.json"
+            }
+        ],
+		"configuration": {
+			"type": "object",
+			"title": "Example configuration",
+			"properties": {
+				"astn.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"astn.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.12.27",
+		"tslint": "^5.20.1",
+		"typescript": "^3.7.5"
+	},
+	"dependencies": {
+		"mrshl": "^0.1.9"
+	}
+}
