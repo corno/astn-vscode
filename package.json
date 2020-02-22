@@ -1,5 +1,5 @@
 {
-	"name": "astn",
+	"name": "astn-vscode",
 	"description": "language support for ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
 	"author": "corno",
 	"license": "MIT",
@@ -31,7 +31,8 @@
 					"astn"
 				],
 				"extensions": [
-					".astn"
+					".astn",
+					".astn-schema"
 				],
 				"configuration": "./language-configuration.json"
 			}
@@ -82,7 +83,7 @@
 		"typescript": "^3.7.5"
 	},
 	"dependencies": {
-		"mrshl": "^0.1.9",
+		"astn": "^0.5.0",
 		"vscode-languageclient": "^5.2.1",
 		"vscode-languageserver": "^5.2.1"
 	}
