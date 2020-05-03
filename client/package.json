@@ -1,19 +1,22 @@
 {
-	"name": "astn-vscode-language-client",
-	"description": "ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
+	"name": "lsp-sample-client",
+	"description": "VSCode part of a language server",
 	"author": "Microsoft Corporation",
 	"license": "MIT",
 	"version": "0.0.1",
-	"publisher": "mrshl",
+	"publisher": "vscode",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/corno/astn-vscode-language-server"
+		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
 	"engines": {
-		"vscode": "^1.33.0"
+		"vscode": "^1.43.0"
 	},
-	"scripts": {
-		"update-vscode": "vscode-install",
-		"postinstall": "vscode-install"
+	"dependencies": {
+		"vscode-languageclient": "^6.1.3"
+	},
+	"devDependencies": {
+		"@types/vscode": "1.43.0",
+		"vscode-test": "^1.3.0"
 	}
 }

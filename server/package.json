@@ -1,15 +1,19 @@
 {
-	"name": "astn-vscode-language-server",
-	"description": "implementation of astn language server in node.",
+	"name": "lsp-sample-server",
+	"description": "Example implementation of a language server in node.",
 	"version": "1.0.0",
-	"author": "corno",
+	"author": "Microsoft Corporation",
 	"license": "MIT",
 	"engines": {
 		"node": "*"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/corno/astn-vscode-language-server"
+		"url": "https://github.com/Microsoft/vscode-extension-samples"
+	},
+	"dependencies": {
+		"vscode-languageserver": "^6.1.1",
+		"vscode-languageserver-textdocument": "^1.0.1"
 	},
 	"scripts": {}
 }

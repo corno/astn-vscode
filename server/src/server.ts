@@ -3,14 +3,9 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
-import * as fs from "fs"
-import * as path from "path"
-import * as url from "url"
-
 import {
 	createConnection,
 	TextDocuments,
-	TextDocument,
 	Diagnostic,
 	DiagnosticSeverity,
 	ProposedFeatures,
@@ -19,9 +14,13 @@ import {
 	CompletionItem,
 	CompletionItemKind,
 	TextDocumentPositionParams,
-	Position,
+	TextDocumentSyncKind,
+	InitializeResult
 } from 'vscode-languageserver';
-import * as astn from "astn"
+
+import {
+	TextDocument
+} from 'vscode-languageserver-textdocument';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -29,7 +28,7 @@ let connection = createConnection(ProposedFeatures.all);
 
 // Create a simple text document manager. The text document manager
 // supports full document sync only
-let documents: TextDocuments = new TextDocuments();
+let documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability: boolean = false;
 let hasWorkspaceFolderCapability: boolean = false;
@@ -52,15 +51,23 @@ connection.onInitialize((params: InitializeParams) => {
 		capabilities.textDocument.publishDiagnostics.relatedInformation
 	);
 
-	return {
+	const result: InitializeResult = {
 		capabilities: {
-			textDocumentSync: documents.syncKind,
+			textDocumentSync: TextDocumentSyncKind.Full,
 			// Tell the client that the server supports code completion
 			completionProvider: {
 				resolveProvider: true
 			}
 		}
 	};
+	if (hasWorkspaceFolderCapability) {
+		result.capabilities.workspace = {
+			workspaceFolders: {
+				supported: true
+			}
+		};
+	}
+	return result;
 });
 
 connection.onInitialized(() => {
@@ -120,8 +127,6 @@ function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
-	//cleanup diagnostics
-	connection.sendDiagnostics({ uri: e.document.uri, diagnostics: [] })
 	documentSettings.delete(e.document.uri);
 });
 
@@ -131,107 +136,51 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
-function createDiagnostic(message: string, uri: string, severity: DiagnosticSeverity, start: Position, end: Position): Diagnostic {
-	let diagnostic: Diagnostic = {
-		severity: severity,
-		range: {
-			start: start,
-			end: end,
-		},
-		message: message,
-		source: 'astn'
-	};
-	if (hasDiagnosticRelatedInformationCapability) {
-		diagnostic.relatedInformation = [
-			{
-				location: {
-					uri: uri,
-					range: Object.assign({}, diagnostic.range)
-				},
-				message: message
-			},
-		];
-	}
-	return diagnostic
-}
-
-async function validateDocument(
-	textDocument: TextDocument,
-	schema: null | astn.Schema,
-) {
-	//connection.console.log(`validation of ${textDocument.uri} with${schema === null ? "*out*" : ""} external schema`)
-	let diagnostics: Diagnostic[] = [];
-	astn.validateDocument(
-		textDocument.getText(),
-		new astn.DummyNodeBuilder(),
-		schema,
-		astn.resolveSchemaFromSite,
-		(errorMessage, range) => {
-			diagnostics.push(createDiagnostic(errorMessage, textDocument.uri, DiagnosticSeverity.Error, textDocument.positionAt(range.start.position), textDocument.positionAt(range.end.position)))
-		},
-		(warningMessage, range) => {
-			diagnostics.push(createDiagnostic(warningMessage, textDocument.uri, DiagnosticSeverity.Warning, textDocument.positionAt(range.start.position), textDocument.positionAt(range.end.position)))
-		},
-	).then(() => {
-		connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-	})
-
-}
-
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
-	//let settings = await getDocumentSettings(textDocument.uri);
+	let settings = await getDocumentSettings(textDocument.uri);
 
-	const text = textDocument.getText();
-	const textUri = new url.URL(textDocument.uri)
-	if (textUri.protocol === "file:") {
-		const rawFilePath = decodeURIComponent(textUri.pathname)
-		const filePath = rawFilePath.startsWith("/")
-			? rawFilePath.substr(1) //'localhost' not specified, strip leading slash
-			: rawFilePath
+	// The validator creates diagnostics for all uppercase words length 2 and more
+	let text = textDocument.getText();
+	let pattern = /\b[A-Z]{2,}\b/g;
+	let m: RegExpExecArray | null;
 
-		const dirname = path.dirname(filePath)
-		fs.readFile(path.join(dirname, "schema.astn-schema"), { encoding: "utf-8" }, (err, serializedSchema) => {
-			if (err) {
-
-				if (err.code === "ENOENT") {
-					//there is no schema file
-					try {
-						validateDocument(textDocument, null)
-					} catch (e) {
-						let diagnostics: Diagnostic[] = [];
-						diagnostics.push(createDiagnostic(`uncaught astn exception: ${e.message}`, textDocument.uri, DiagnosticSeverity.Error, textDocument.positionAt(0), textDocument.positionAt(text.length)))
-						connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-					}
-				} else {
-					//something else went wrong
-					connection.sendDiagnostics({
-						uri: textDocument.uri, diagnostics: [createDiagnostic(
-							`error while retrieving schema: ${err.message}`,
-							textDocument.uri,
-							DiagnosticSeverity.Error,
-							textDocument.positionAt(0),
-							textDocument.positionAt(0),
-						)]
-					})
+	let problems = 0;
+	let diagnostics: Diagnostic[] = [];
+	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
+		problems++;
+		let diagnostic: Diagnostic = {
+			severity: DiagnosticSeverity.Warning,
+			range: {
+				start: textDocument.positionAt(m.index),
+				end: textDocument.positionAt(m.index + m[0].length)
+			},
+			message: `${m[0]} is all uppercase.`,
+			source: 'ex'
+		};
+		if (hasDiagnosticRelatedInformationCapability) {
+			diagnostic.relatedInformation = [
+				{
+					location: {
+						uri: textDocument.uri,
+						range: Object.assign({}, diagnostic.range)
+					},
+					message: 'Spelling matters'
+				},
+				{
+					location: {
+						uri: textDocument.uri,
+						range: Object.assign({}, diagnostic.range)
+					},
+					message: 'Particularly for names'
 				}
-			} else {
-
-				astn.deserializeSchema(serializedSchema)
-					.then(schema => {
-						validateDocument(
-							textDocument,
-							schema
-						)
-					})
-					.catch(message => {
-						let diagnostics: Diagnostic[] = [];
-						diagnostics.push(createDiagnostic(`error in schema: ${message}`, textDocument.uri, DiagnosticSeverity.Error, textDocument.positionAt(0), textDocument.positionAt(0)))
-						connection.sendDiagnostics({ uri: textDocument.uri, diagnostics: diagnostics });
-					})
-			}
-		})
+			];
+		}
+		diagnostics.push(diagnostic);
 	}
+
+	// Send the computed diagnostics to VSCode.
+	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -247,17 +196,12 @@ connection.onCompletion(
 		// info and always provide the same completion items.
 		return [
 			{
-				label: '{ "FOO" }',
-				kind: CompletionItemKind.Snippet,
-				data: 1
-			},
-			{
-				label: 'TypeScript_' + _textDocumentPosition.position.line + ":" + _textDocumentPosition.position.character,
+				label: 'TypeScript',
 				kind: CompletionItemKind.Text,
 				data: 1
 			},
 			{
-				label: 'JavaScript_' + _textDocumentPosition.position.line + ":" + _textDocumentPosition.position.character,
+				label: 'JavaScript',
 				kind: CompletionItemKind.Text,
 				data: 2
 			}

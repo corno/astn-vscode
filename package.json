@@ -1,60 +1,37 @@
 {
-	"name": "astn-vscode",
-	"description": "language support for ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
-	"author": "corno",
+	"name": "lsp-sample",
+	"description": "A language server example",
+	"author": "Microsoft Corporation",
 	"license": "MIT",
-	"version": "1.2.0",
+	"version": "1.0.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/corno/astn-vscode"
+		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
-	"publisher": "mrshl",
+	"publisher": "vscode-samples",
 	"categories": [],
 	"keywords": [
-		"ASTN",
-		"AST",
 		"multi-root ready"
 	],
 	"engines": {
-		"vscode": "^1.33.0"
+		"vscode": "^1.43.0"
 	},
 	"activationEvents": [
-		"onLanguage:astn"
+		"onLanguage:plaintext"
 	],
-	"main": "./out/client/extension",
+	"main": "./client/out/extension",
 	"contributes": {
-		"languages": [
-			{
-				"id": "astn",
-				"aliases": [
-					"astn",
-					"astn"
-				],
-				"extensions": [
-					".astn",
-					".astn-schema"
-				],
-				"configuration": "./language-configuration.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "astn",
-				"scopeName": "source.astn",
-				"path": "./syntaxes/astn.tmLanguage.json"
-			}
-		],
 		"configuration": {
 			"type": "object",
 			"title": "Example configuration",
 			"properties": {
-				"astn.maxNumberOfProblems": {
+				"languageServerExample.maxNumberOfProblems": {
 					"scope": "resource",
 					"type": "number",
 					"default": 100,
 					"description": "Controls the maximum number of problems produced by the server."
 				},
-				"astn.trace.server": {
+				"languageServerExample.trace.server": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
@@ -69,22 +46,18 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
+		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
 		"test": "sh ./scripts/e2e.sh"
 	},
 	"devDependencies": {
-		"@types/node": "^13.7.4",
 		"@types/mocha": "^5.2.7",
-		"vscode": "^1.1.35",
-		"tslint": "^5.20.1",
-		"typescript": "^3.7.5"
-	},
-	"dependencies": {
-		"astn": "^0.5.0",
-		"vscode-languageclient": "^5.2.1",
-		"vscode-languageserver": "^5.2.1"
+		"mocha": "^6.2.2",
+		"@types/node": "^12.12.0",
+		"eslint": "^6.4.0",
+		"@typescript-eslint/parser": "^2.3.0",
+		"typescript": "^3.8.3"
 	}
 }
