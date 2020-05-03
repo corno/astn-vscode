@@ -1,7 +1,8 @@
 import * as astn from "astn"
 import * as fs from "fs"
 import * as path from "path"
-import * as url from "url"
+import { SideEffectsAPI } from 'astn'
+import { URI } from 'vscode-uri'
 
 enum Severity {
 	warning,
@@ -17,17 +18,16 @@ type Diagnostic = {
 
 type DiagnosticCallback = (diagnostic: Diagnostic) => void
 
-async function validateDocument2(
+async function validateDocumentAfterExternalSchemaResolution(
 	documentText: string,
 	dataset: null | astn.Dataset,
 	diagnosticCallback: DiagnosticCallback,
+	sideEffects: astn.SideEffectsAPI | null,
 	onDone: () => void,
 ) {
 
 	const schemaReferenceResolver = astn.createFromURLSchemaDeserializer('www.astn.io', '/dev/schemas/', 7000)
 
-	//connection.console.log(`validation of ${textDocument.uri} with${schema === null ? "*out*" : ""} external schema`)
-	let diagnostics: Diagnostic[] = [];
 	astn.deserializeDataset(
 		documentText,
 		dataset,
@@ -44,7 +44,7 @@ async function validateDocument2(
 		(warningMessage, range) => {
 			addDiagnostic(diagnosticCallback, warningMessage, Severity.warning, range.start.position, range.end.position)
 		},
-		null,
+		sideEffects,
 	).then(() => {
 		onDone()
 	}).catch(message => {
@@ -89,53 +89,27 @@ export function validateDocument(
 	uri: string,
 	documentText: string,
 	diagnosticCallback: DiagnosticCallback,
+	sideEffects: SideEffectsAPI | null,
 	onDone: () => void
 ) {
-	// diagnosticCallback({
-	// 	severity: Severity.warning,
-	// 	message: "IMPLMEMENT ME: diagnostic",
-	// 	range: {
-	// 		start: {
-	// 			position: 0,
-	// 			line: 0,
-	// 			column: 0
-	// 		},
-	// 		end: {
-	// 			position: 0,
-	// 			line: 0,
-	// 			column: 1
 
-	// 		}
-	// 	}
-	// })
-	const textUri = new url.URL(uri)
-	if (textUri.protocol === "file:") {
-		const rawFilePath = decodeURIComponent(textUri.pathname)
-		const filePath = rawFilePath.startsWith("/")
-			? rawFilePath.substr(1) //'localhost' not specified, strip leading slash
-			: rawFilePath
+	let parsedURI = URI.parse(uri)
 
+	const filePath = parsedURI.fsPath
+	if (filePath !== undefined) { //FIXME filePath cannot be undefined according to API, but what if the uri is not file://...
 		const dirname = path.dirname(filePath)
 		fs.readFile(path.join(dirname, "schema.astn-schema"), { encoding: "utf-8" }, (err, serializedSchema) => {
 			if (err) {
 
 				if (err.code === "ENOENT") {
 					//there is no schema file
-					try {
-						validateDocument2(
-							documentText,
-							null,
-							diagnosticCallback,
-							onDone,
-						)
-					} catch (e) {
-						diagnosticsFailed(
-							`uncaught astn exception: ${e.message}`,
-							documentText,
-							diagnosticCallback,
-							onDone
-						)
-					}
+					validateDocumentAfterExternalSchemaResolution(
+						documentText,
+						null,
+						diagnosticCallback,
+						sideEffects,
+						onDone,
+					)
 				} else {
 					//something else went wrong
 					diagnosticsFailed(
@@ -152,22 +126,31 @@ export function validateDocument(
 						throw new Error("HEEEEELP")
 					}
 				).then(schema => {
-					validateDocument2(
+					validateDocumentAfterExternalSchemaResolution(
 						documentText,
 						schema,
 						diagnosticCallback,
+						sideEffects,
 						onDone,
 					)
+				}).catch(message => {
+					diagnosticsFailed(
+						`error in schema: ${message}`,
+						documentText,
+						diagnosticCallback,
+						onDone
+					)
 				})
-					.catch(message => {
-						diagnosticsFailed(
-							`error in schema: ${message}`,
-							documentText,
-							diagnosticCallback,
-							onDone
-						)
-					})
 			}
 		})
+	} else {
+		//not a file, cannot resolve external schema
+		validateDocumentAfterExternalSchemaResolution(
+			documentText,
+			null,
+			diagnosticCallback,
+			sideEffects,
+			onDone,
+		)
 	}
 }

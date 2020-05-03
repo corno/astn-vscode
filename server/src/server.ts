@@ -22,6 +22,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astn';
+import { resolve } from 'dns';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -57,7 +58,8 @@ connection.onInitialize((params: InitializeParams) => {
 			textDocumentSync: TextDocumentSyncKind.Full,
 			// Tell the client that the server supports code completion
 			completionProvider: {
-				resolveProvider: true
+				resolveProvider: true,
+				triggerCharacters: [".", "(", "<", ",", "{", "[", "\"", "'"]
 			}
 		}
 	};
@@ -146,8 +148,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 	let diagnostics: Diagnostic[] = [];
 
-	console.log("SFDFDFSDFSFSSFSFSFSFSD")
-
 	astn.validateDocument(
 		textDocument.uri,
 		text,
@@ -174,6 +174,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			}
 			diagnostics.push(diagnostic);
 		},
+		null,
 		() => {
 			connection.sendDiagnostics({
 				uri: textDocument.uri,
@@ -193,24 +194,34 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
-	(textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
+	(textDocumentPosition, x, y, z) => {
 		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-		const completionItems: CompletionItem[] = []
-		astn.onCompletion(
-			textDocumentPosition.textDocument.uri,
-			textDocumentPosition.position.line,
-			textDocumentPosition.position.character,
-			(label, data) => {
-				completionItems.push({
-					label: label,
-					kind: CompletionItemKind.Text, //FIXME
-					data: data,
-				})
+		// which code complete got requested.
+		return new Promise<CompletionItem[]>((resolve, _reject) => {
+
+			const completionItems: CompletionItem[] = []
+			const doc = documents.get(textDocumentPosition.textDocument.uri)
+			if (doc === undefined) {
+				resolve([])
+				return
 			}
-		)
-		return completionItems
+			astn.onCompletion(
+				textDocumentPosition.textDocument.uri,
+				textDocumentPosition.position.line,
+				textDocumentPosition.position.character,
+				doc.getText(),
+				(label, data) => {
+					completionItems.push({
+						label: label,
+						kind: CompletionItemKind.Text, //FIXME
+						data: data,
+					})
+				},
+				() => {
+					resolve(completionItems)
+				}
+			)
+		})
 	}
 );
 
