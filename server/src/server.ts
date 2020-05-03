@@ -22,7 +22,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astn';
-import { resolve } from 'dns';
+import { URI } from "vscode-uri"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -148,15 +148,17 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 	let diagnostics: Diagnostic[] = [];
 
+	const uri = URI.parse(textDocument.uri)
+
 	astn.validateDocument(
-		textDocument.uri,
 		text,
+		uri.fsPath,
 		astnDiagnostic => {
 			let diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Warning,
 				range: {
-					start: textDocument.positionAt(astnDiagnostic.beginPosition),
-					end: textDocument.positionAt(astnDiagnostic.endPosition)
+					start: textDocument.positionAt(astnDiagnostic.range.start.position),
+					end: textDocument.positionAt(astnDiagnostic.range.end.position)
 				},
 				message: astnDiagnostic.message,
 				source: 'astn'
@@ -175,13 +177,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			diagnostics.push(diagnostic);
 		},
 		null,
-		() => {
-			connection.sendDiagnostics({
-				uri: textDocument.uri,
-				diagnostics: diagnostics,
-			})
-		}
-	)
+	).then(() => {
+		connection.sendDiagnostics({
+			uri: textDocument.uri,
+			diagnostics: diagnostics,
+		})
+	})
 
 	// Send the computed diagnostics to VSCode.
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
@@ -197,15 +198,13 @@ connection.onCompletion(
 	(textDocumentPosition, x, y, z) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested.
-		return new Promise<CompletionItem[]>((resolve, _reject) => {
 
 			const completionItems: CompletionItem[] = []
 			const doc = documents.get(textDocumentPosition.textDocument.uri)
 			if (doc === undefined) {
-				resolve([])
-				return
+				return []
 			}
-			astn.onCompletion(
+			return astn.onCompletion(
 				textDocumentPosition.textDocument.uri,
 				textDocumentPosition.position.line,
 				textDocumentPosition.position.character,
@@ -217,11 +216,9 @@ connection.onCompletion(
 						data: data,
 					})
 				},
-				() => {
-					resolve(completionItems)
-				}
-			)
-		})
+			).then(() => {
+				return completionItems
+			})
 	}
 );
 
