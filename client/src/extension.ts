@@ -4,7 +4,8 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, } from 'vscode';
+import * as vscode from "vscode"
 
 import {
 	LanguageClient,
@@ -12,8 +13,46 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
+import * as astn from './astn';
 
 let client: LanguageClient;
+
+function convertLocation(location: astn.Location) {
+	return new vscode.Position(location.line -1, location.column -1)
+}
+
+function convertRange(range: astn.Range) {
+	return new vscode.Range(convertLocation(range.start), convertLocation(range.end))
+}
+
+// formatter implemented using API
+vscode.languages.registerDocumentFormattingEditProvider('astn', {
+	provideDocumentFormattingEdits(document: vscode.TextDocument) {
+		const edits: vscode.TextEdit[] = []
+		return astn.format(
+			document.getText(),
+			(range, newValue) => {
+				edits.push(vscode.TextEdit.replace(
+					convertRange(range),
+					newValue
+				))
+			},
+			range => {
+				edits.push(vscode.TextEdit.delete(
+					convertRange(range)
+				))
+			},
+			(location, newValue) => {
+				edits.push(vscode.TextEdit.insert(
+					convertLocation(location),
+					newValue
+				))
+			}
+		).then(() => {
+			return edits
+		})
+	}
+});
 
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node

@@ -1,1 +1,1 @@
-export { validateDocument } from "astn"
+export { validateDocument, schemaFileName } from "astn"
