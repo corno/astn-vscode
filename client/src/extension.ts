@@ -17,12 +17,12 @@ import * as astn from './astn';
 
 let client: LanguageClient;
 
-function convertLocation(location: astn.Location) {
-	return new vscode.Position(location.line -1, location.column -1)
+function convertLocation(document: vscode.TextDocument, location: astn.Location) {
+	return document.positionAt(location.position)
 }
 
-function convertRange(range: astn.Range) {
-	return new vscode.Range(convertLocation(range.start), convertLocation(range.end))
+function convertRange(document: vscode.TextDocument, range: astn.Range) {
+	return new vscode.Range(convertLocation(document, range.start), convertLocation(document, range.end))
 }
 
 // formatter implemented using API
@@ -33,18 +33,18 @@ vscode.languages.registerDocumentFormattingEditProvider('astn', {
 			document.getText(),
 			(range, newValue) => {
 				edits.push(vscode.TextEdit.replace(
-					convertRange(range),
+					convertRange(document, range),
 					newValue
 				))
 			},
 			range => {
 				edits.push(vscode.TextEdit.delete(
-					convertRange(range)
+					convertRange(document, range)
 				))
 			},
 			(location, newValue) => {
 				edits.push(vscode.TextEdit.insert(
-					convertLocation(location),
+					convertLocation(document, location),
 					newValue
 				))
 			}

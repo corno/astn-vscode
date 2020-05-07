@@ -88,7 +88,7 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"astn": "^0.17.0",
+		"astn": "^0.18.0",
 		"vscode-uri": "^2.1.1"
 	}
 }
