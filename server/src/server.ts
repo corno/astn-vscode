@@ -160,7 +160,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			const range: Range = astnDiagnostic.range === null
 				? {
 					start: textDocument.positionAt(0),
-					end: textDocument.positionAt(text.length - 1)
+					end: astnDiagnostic.severity === astn.DiagnosticSeverity.warning
+						? textDocument.positionAt(0) //don't pollute the whole view for just a warning
+						: textDocument.positionAt(text.length - 1)
 				}
 				: {
 					start: textDocument.positionAt(astnDiagnostic.range.start.position),
