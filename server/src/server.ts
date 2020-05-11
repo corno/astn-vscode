@@ -15,7 +15,8 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	Range,
 } from 'vscode-languageserver';
 
 import {
@@ -151,16 +152,24 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 	const uri = URI.parse(textDocument.uri)
 
+
 	astn.validateDocument(
 		text,
 		uri.fsPath,
 		astnDiagnostic => {
+			const range: Range = astnDiagnostic.range === null
+				? {
+					start: textDocument.positionAt(0),
+					end: textDocument.positionAt(text.length - 1)
+				}
+				: {
+					start: textDocument.positionAt(astnDiagnostic.range.start.position),
+					end: textDocument.positionAt(astnDiagnostic.range.end.position),
+				}
+
 			let diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Warning,
-				range: {
-					start: textDocument.positionAt(astnDiagnostic.range.start.position),
-					end: textDocument.positionAt(astnDiagnostic.range.end.position)
-				},
+				range: range,
 				message: astnDiagnostic.message,
 				source: 'astn'
 			};
