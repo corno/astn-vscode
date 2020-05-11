@@ -84,11 +84,11 @@
 		"mocha": "^7.1.2",
 		"@types/node": "^13.13.5",
 		"eslint": "^7.0.0",
-		"@typescript-eslint/parser": "^2.31.0",
+		"@typescript-eslint/parser": "^2.32.0",
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"astn": "^0.21.2",
+		"astn": "^0.21.3",
 		"vscode-uri": "^2.1.1"
 	}
 }
