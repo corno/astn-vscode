@@ -147,7 +147,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
-
+ 
 	let diagnostics: Diagnostic[] = [];
 
 	const uri = URI.parse(textDocument.uri)
@@ -156,6 +156,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	astn.validateDocument(
 		text,
 		uri.fsPath,
+		astn.readSchemaFileFromFileSystem,
 		astnDiagnostic => {
 			const range: Range = astnDiagnostic.range === null
 				? {
@@ -189,7 +190,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			diagnostics.push(diagnostic);
 		},
 		null,
-	).then(() => {
+	).convertToNativePromise().then(() => {
 		connection.sendDiagnostics({
 			uri: textDocument.uri,
 			diagnostics: diagnostics,

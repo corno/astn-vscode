@@ -34,6 +34,7 @@ export function onCompletion(
 	return astn.validateDocument(
 		content,
 		filePath,
+		astn.readSchemaFileFromFileSystem,
 		() => {
 			//
 		},
@@ -57,7 +58,7 @@ export function onCompletion(
 			}
 			previousAfter = after
 		})
-	).then(() => {
+	).convertToNativePromise().then(() => {
 		if (!positionAlreadyFound) {
 			generate(previousAfter)
 		}

@@ -82,13 +82,13 @@
 	"devDependencies": {
 		"@types/mocha": "^7.0.2",
 		"mocha": "^7.1.2",
-		"@types/node": "^13.13.5",
+		"@types/node": "^14.0.1",
 		"eslint": "^7.0.0",
-		"@typescript-eslint/parser": "^2.32.0",
-		"typescript": "^3.8.3"
+		"@typescript-eslint/parser": "^2.33.0",
+		"typescript": "^3.9.2"
 	},
 	"dependencies": {
-		"astn": "^0.21.4",
+		"astn": "^0.23.0",
 		"vscode-uri": "^2.1.1"
 	}
 }
