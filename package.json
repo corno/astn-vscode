@@ -73,7 +73,7 @@
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"test": "sh ./scripts/e2e.sh",
+		"test": "## sh ./scripts/e2e.sh",
 		"validatePublishReadiness": "git diff --exit-code && ncu -u --packageFile package.json && npm install && npm run compile",
 		"pubMin": "npm run validatePublishReadiness && npm version minor && git push && vsce publish",
 		"pubPatch": "npm run validatePublishReadiness && npm version patch && git push && vsce publish",
