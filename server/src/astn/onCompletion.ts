@@ -31,33 +31,35 @@ export function onCompletion(
 
 	const filePath = parsedURI.fsPath
 
-	return astn.validateDocument(
+	return astn.loadDocument(
 		content,
 		filePath,
 		astn.readSchemaFileFromFileSystem,
 		() => {
 			//
 		},
-		new astn.SnippetGenerator((range, intra, after) => {
-			//console.log("LOCATION", range.start.line, range.start.column, range.end.line, range.end.column)
+		[
+			new astn.SnippetGenerator((range, intra, after) => {
+				//console.log("LOCATION", range.start.line, range.start.column, range.end.line, range.end.column)
 
-			if (positionAlreadyFound) {
-				return
-			}
-			if (line < range.start.line || (line === range.start.line && character < range.start.column)) {
-				//console.log("AFTER", previousAfter)
-				generate(previousAfter)
-				positionAlreadyFound = true
-				return
-			}
-			if (line < range.end.line || (line === range.end.line && character < range.end.column - 1)) {
-				//console.log("INTRA", intra)
-				generate(intra)
-				positionAlreadyFound = true
-				return
-			}
-			previousAfter = after
-		})
+				if (positionAlreadyFound) {
+					return
+				}
+				if (line < range.start.line || (line === range.start.line && character < range.start.column)) {
+					//console.log("AFTER", previousAfter)
+					generate(previousAfter)
+					positionAlreadyFound = true
+					return
+				}
+				if (line < range.end.line || (line === range.end.line && character < range.end.column - 1)) {
+					//console.log("INTRA", intra)
+					generate(intra)
+					positionAlreadyFound = true
+					return
+				}
+				previousAfter = after
+			})
+		],
 	).convertToNativePromise().then(() => {
 		if (!positionAlreadyFound) {
 			generate(previousAfter)

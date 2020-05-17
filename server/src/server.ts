@@ -153,7 +153,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const uri = URI.parse(textDocument.uri)
 
 
-	astn.validateDocument(
+	astn.loadDocument(
 		text,
 		uri.fsPath,
 		astn.readSchemaFileFromFileSystem,
@@ -189,7 +189,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			}
 			diagnostics.push(diagnostic);
 		},
-		null,
+		[],
 	).convertToNativePromise().then(() => {
 		connection.sendDiagnostics({
 			uri: textDocument.uri,
