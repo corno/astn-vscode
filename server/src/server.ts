@@ -22,8 +22,7 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import * as astn from './astn';
-import * as path from "path"
+import * as astn from './astn'
 import { URI } from "vscode-uri"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
