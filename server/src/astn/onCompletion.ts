@@ -1,4 +1,5 @@
 import * as astn from "astn"
+import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
 import { URI } from 'vscode-uri'
 
 export function onCompletion(
@@ -34,7 +35,7 @@ export function onCompletion(
 	return astn.loadDocument(
 		content,
 		filePath,
-		astn.readSchemaFileFromFileSystem,
+		readSchemaFileFromFileSystem,
 		() => {
 			//
 		},
@@ -60,6 +61,9 @@ export function onCompletion(
 				previousAfter = after
 			})
 		],
+		schema => {
+			return astn.createInMemoryDataset(schema)
+		}
 	).convertToNativePromise().then(() => {
 		if (!positionAlreadyFound) {
 			generate(previousAfter)

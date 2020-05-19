@@ -70,8 +70,8 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -b",
-		"watch": "tsc -b -w",
+		"build": "rm -rf ./server/out && rm -rf ./client/out && tsc -b",
+		"watch": "rm -rf ./server/out && rm -rf ./client/out && tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
 		"test": "## sh ./scripts/e2e.sh",
 		"validatePublishReadiness": "git diff --exit-code && ncu -u --packageFile package.json && npm install && npm run compile",

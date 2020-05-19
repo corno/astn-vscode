@@ -13,7 +13,6 @@ import {
 	DidChangeConfigurationNotification,
 	CompletionItem,
 	CompletionItemKind,
-	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
 	Range,
@@ -23,6 +22,8 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astn'
+import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
+
 import { URI } from "vscode-uri"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -155,7 +156,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	astn.loadDocument(
 		text,
 		uri.fsPath,
-		astn.readSchemaFileFromFileSystem,
+		readSchemaFileFromFileSystem,
 		astnDiagnostic => {
 			const range: Range = astnDiagnostic.range === null
 				? {
@@ -189,6 +190,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			diagnostics.push(diagnostic);
 		},
 		[],
+		schema => {
+			return astn.createInMemoryDataset(schema)
+		}
 	).convertToNativePromise().then(() => {
 		connection.sendDiagnostics({
 			uri: textDocument.uri,
