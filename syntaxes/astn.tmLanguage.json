@@ -22,68 +22,6 @@
 		}
 	],
 	"repository": {
-		"list": {
-			"begin": "\\[",
-			"beginCaptures": {
-				"0": {
-					"name": "punctuation.definition.list.begin.astn"
-				}
-			},
-			"end": "\\]",
-			"endCaptures": {
-				"0": {
-					"name": "punctuation.definition.list.end.astn"
-				}
-			},
-			"name": "meta.structure.list.astn",
-			"patterns": [
-				{
-					"include": "#apostrophed-string-other"
-				},
-				{
-					"include": "#value"
-				},
-				{
-					"match": ",",
-					"name": "punctuation.separator.list.astn"
-				},
-				{
-					"match": "[^\\s\\]]",
-					"name": "invalid.illegal.expected-list-separator-or-end.astn"
-				}
-			]
-		},
-		"arraytype": {
-			"begin": "\\<",
-			"beginCaptures": {
-				"0": {
-					"name": "punctuation.definition.arraytype.begin.astn"
-				}
-			},
-			"end": "\\>",
-			"endCaptures": {
-				"0": {
-					"name": "punctuation.definition.arraytype.end.astn"
-				}
-			},
-			"name": "meta.structure.arraytype.astn",
-			"patterns": [
-				{
-					"include": "#apostrophed-string-other"
-				},
-				{
-					"include": "#value"
-				},
-				{
-					"match": ",",
-					"name": "punctuation.separator.arraytype.astn"
-				},
-				{
-					"match": "[^\\s\\]]",
-					"name": "invalid.illegal.expected-arraytype-separator-or-end.astn"
-				}
-			]
-		},
 		"comments": {
 			"patterns": [
 				{
@@ -125,6 +63,62 @@
 			"match": "(?x)        # turn on extended mode\n  -?        # an optional minus\n  (?:\n    0       # a zero\n    |       # ...or...\n    [1-9]   # a 1-9 character\n    \\d*     # followed by zero or more digits\n  )\n  (?:\n    (?:\n      \\.    # a period\n      \\d+   # followed by one or more digits\n    )?\n    (?:\n      [eE]  # an e character\n      [+-]? # followed by an option +/-\n      \\d+   # followed by one or more digits\n    )?      # make exponent optional\n  )?        # make decimal portion optional",
 			"name": "constant.numeric.astn"
 		},
+		"list": {
+			"begin": "\\[",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.begin.astn"
+				}
+			},
+			"end": "\\]",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.end.astn"
+				}
+			},
+			"name": "meta.structure.list.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.list.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-list-separator-or-end.astn"
+				}
+			]
+		},
+		"arraytype": {
+			"begin": "\\<",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.arraytype.begin.astn"
+				}
+			},
+			"end": "\\>",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.arraytype.end.astn"
+				}
+			},
+			"name": "meta.structure.arraytype.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.arraytype.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-arraytype-separator-or-end.astn"
+				}
+			]
+		},
 		"dictionary": {
 			"begin": "\\{",
 			"beginCaptures": {
@@ -141,18 +135,17 @@
 			"name": "meta.structure.dictionary.astn",
 			"patterns": [
 				{
-					"include": "#apostrophed-string-in-dictionary"
+					"include": "#apostrophed-key-in-dictionary"
+				},
+				{
+					"include": "#quoted-key-in-dictionary"
 				},
 				{
 					"include": "#value"
 				},
 				{
-					"match": ":",
-					"name": "punctuation.separator.dictionary.key-value.astn"
-				},
-				{
 					"match": ",",
-					"name": "punctuation.separator.arraytype.astn"
+					"name": "punctuation.separator.dictionary.astn"
 				},
 				{
 					"match": "[^\\s\\}]",
@@ -176,18 +169,17 @@
 			"name": "meta.structure.type.astn",
 			"patterns": [
 				{
-					"include": "#apostrophed-string-in-type"
+					"include": "#apostrophed-key-in-type"
+				},
+				{
+					"include": "#quoted-key-in-type"
 				},
 				{
 					"include": "#value"
 				},
 				{
-					"match": ":",
-					"name": "punctuation.separator.type.key-value.astn"
-				},
-				{
 					"match": ",",
-					"name": "punctuation.separator.arraytype.astn"
+					"name": "punctuation.separator.type.astn"
 				},
 				{
 					"match": "[^\\s\\}]",
@@ -195,16 +187,7 @@
 				}
 			]
 		},
-		"taggedunion": {
-			"name": "meta.structure.type.astn",
-			"patterns": [
-				{
-					"match": "\\|",
-					"name": "punctuation.definition.taggedunion.begin.astn"
-				}
-			]
-		},
-		"quoted-string": {
+		"quoted-value": {
 			"begin": "\"",
 			"beginCaptures": {
 				"0": {
@@ -224,65 +207,167 @@
 				}
 			]
 		},
+		"apostrophed-value": {
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed-value.other.astn"
+				}
+			},
+			"end": "'",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed-value.other.astn"
+				}
+			},
+			"name": "string.astn support.type.apostrophed-string.other.astn",
+			"patterns": [
+				{
+					"include": "#stringcontent"
+				}
+			]
+		},
 		"apostrophed-string-other": {
 			"begin": "'",
 			"beginCaptures": {
 				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.other.astn"
+					"name": "punctuation.support.type.apostrophed-string.other.astn"
 				}
 			},
 			"end": "'",
 			"endCaptures": {
 				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.other.astn"
+					"name": "punctuation.support.type.apostrophed-string.other.astn"
 				}
 			},
-			"name": "string.astn support.type.aposthrophed-string.other.astn",
+			"name": "string.astn support.type.apostrophed-string.other.astn",
 			"patterns": [
 				{
 					"include": "#stringcontent"
 				}
 			]
 		},
-		"apostrophed-string-in-type": {
-			"begin": "'",
+		"quoted-tagged-union": {
+			"begin": "(\\|)\\s*(\")",
 			"beginCaptures": {
-				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.in-type.astn"
+				"1": {
+					"name": "punctuation.separator.other.tagged-union.astn"
+				},
+				"2": {
+					"name": "punctuation.definition.string.quote.begin.astn"
 				}
 			},
-			"end": "'",
+			"end": "\"",
 			"endCaptures": {
 				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.in-type.astn"
+					"name": "punctuation.definition.string.quote.end.astn"
 				}
 			},
-			"name": "string.astn support.type.aposthrophed-string.in-type.astn",
+			"name": "keyword.operator.logical.tagged-union.astn",
 			"patterns": [
 				{
 					"include": "#stringcontent"
 				}
 			]
 		},
-		"apostrophed-string-in-dictionary": {
-			"begin": "'",
+		"apostrophed-tagged-union": {
+			"begin": "(\\|)\\s*(')",
 			"beginCaptures": {
-				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.in-dictionary.astn"
+				"1": {
+					"name": "punctuation.separator.other.tagged-union.astn"
+				},
+				"2": {
+					"name": "punctuation.support.type.apostrophed-string.tagged-union-option.astn"
 				}
 			},
 			"end": "'",
 			"endCaptures": {
 				"0": {
-					"name": "punctuation.support.type.aposthrophed-string.in-dictionary.astn"
+					"name": "punctuation.support.type.apostrophed-string.tagged-union-option.astn"
 				}
 			},
-			"name": "string.astn support.type.aposthrophed-string.in-dictionary.astn",
+			"name": "keyword.operator.logical.tagged-union.astn",
 			"patterns": [
 				{
 					"include": "#stringcontent"
 				}
 			]
+		},
+		"quoted-key-in-dictionary": {
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.quote.begin.astn"
+				}
+			},
+			"end": "(\")\\s*(:)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.definition.string.quote.end.astn"
+				},
+				"2": {
+					"name": "punctuation.definition.colon.astn"
+				}
+			},
+			"name": "string.quoted.single.astn",
+			"patterns": [
+				{
+					"include": "#stringcontent"
+				}
+			]
+		},
+		"apostrophed-key-in-dictionary": {
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed-key-in-dictionary.other.astn"
+				}
+			},
+			"end": "(')\\s*(:)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.support.type.apostrophed-key-in-dictionary.other.astn"
+				},
+				"2": {
+					"name": "punctuation.separator.key-value.astn"
+				}
+			},
+			"name": "variable.other.key-in-dictionary.astn",
+			"patterns": [
+				{
+					"include": "#stringcontent"
+				}
+			]
+		},
+		"quoted-key-in-type": {
+			"match": "(\")[^\"]*(\")\\s*(:)",
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.string.quoted-key-in-type.begin.astn"
+				},
+				"2": {
+					"name": "punctuation.definition.string.quoted-key-in-type.end.astn"
+				},
+				"3": {
+					"name": "punctuation.definition.colon.astn"
+				}
+			},
+			"name": "keyword.other.quoted-key-in-type.astn"
+		},
+		"apostrophed-key-in-type": {
+			"match": "(')[^\"]*(')\\s*(:)",
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.string.apostrophed-key-in-type.begin.astn"
+				},
+				"2": {
+					"name": "punctuation.definition.string.apostrophed-key-in-type.end.astn"
+				},
+				"3": {
+					"name": "punctuation.definition.colon.astn"
+				}
+			},
+			"name": "keyword.other.apostrophed-key-in-type.astn"
 		},
 		"stringcontent": {
 			"patterns": [
@@ -305,9 +390,6 @@
 					"include": "#number"
 				},
 				{
-					"include": "#quoted-string"
-				},
-				{
 					"include": "#list"
 				},
 				{
@@ -323,7 +405,16 @@
 					"include": "#comments"
 				},
 				{
-					"include": "#taggedunion"
+					"include": "#apostrophed-tagged-union"
+				},
+				{
+					"include": "#quoted-tagged-union"
+				},
+				{
+					"include": "#quoted-value"
+				},
+				{
+					"include": "#apostrophed-value"
 				}
 			]
 		}
