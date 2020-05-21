@@ -4,9 +4,8 @@ type CompletionDetails = {
 }
 
 export function onCompletionResolve(_data: string): CompletionDetails {
-	//console.log("IMPLEMENT ME: onCompletionResolve")
 	return {
-		detail: "IMPLEMENT ME: completionResolve detail",
-		documentation: "IMPLEMENT ME: completionResolve documentation",
+		detail: "",
+		documentation: "",
 	}
 }
