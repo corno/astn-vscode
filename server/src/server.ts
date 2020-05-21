@@ -23,6 +23,7 @@ import {
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astn'
 import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
+import { makeNativeHTTPrequest} from "astn/dist/src/makeNativeHTTPrequest"
 
 import { URI } from "vscode-uri"
 
@@ -156,6 +157,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	astn.loadDocument(
 		text,
 		uri.fsPath,
+		makeNativeHTTPrequest,
 		readSchemaFileFromFileSystem,
 		astnDiagnostic => {
 			const range: Range = astnDiagnostic.range === null
@@ -227,8 +229,8 @@ connection.onCompletion(
 		}
 		return astn.onCompletion(
 			textDocumentPosition.textDocument.uri,
-			textDocumentPosition.position.line,
-			textDocumentPosition.position.character,
+			textDocumentPosition.position.line + 1, //astn's line numbering is 1 based, vscode's is 0 based
+			textDocumentPosition.position.character + 1, //astn's character numbering is 1 based, vscode's is 0 based
 			doc.getText(),
 			(label, data) => {
 				completionItems.push({

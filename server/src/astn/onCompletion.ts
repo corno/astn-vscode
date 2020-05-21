@@ -1,22 +1,24 @@
 import * as astn from "astn"
 import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
 import { URI } from 'vscode-uri'
+import { makeNativeHTTPrequest } from 'astn/dist/src/makeNativeHTTPrequest'
+import { printRange } from 'astn'
 
 export function onCompletion(
 	uri: string,
-	lineMinusOne: number,
-	character: number,
+	completionPositionLine: number,
+	completionPositionCharacter: number,
 	content: string,
 	callback: (
 		label: string,
 		data: string
 	) => void
 ): Promise<void> {
+	console.log("Completion postion", completionPositionLine, completionPositionCharacter)
 	let positionAlreadyFound = false
-	let previousAfter: null | astn.GenerateSnippets = null
-	const line = lineMinusOne + 1
+	let previousAfter: null | (() => string[]) = null
 	//console.log("FINDING COMPLETIONS", line, character)
-	function generate(gs: astn.GenerateSnippets | null) {
+	function generate(gs: (() => string[]) | null) {
 		if (gs !== null) {
 			const snippets = gs()
 			//console.log(snippets)
@@ -35,24 +37,25 @@ export function onCompletion(
 	return astn.loadDocument(
 		content,
 		filePath,
+		makeNativeHTTPrequest,
 		readSchemaFileFromFileSystem,
 		() => {
 			//
 		},
 		[
-			new astn.SnippetGenerator((range, intra, after) => {
+			new astn.SnippetGenerator((tokenRange, intra, after) => {
 				//console.log("LOCATION", range.start.line, range.start.column, range.end.line, range.end.column)
 
 				if (positionAlreadyFound) {
 					return
 				}
-				if (line < range.start.line || (line === range.start.line && character < range.start.column)) {
+				if (completionPositionLine < tokenRange.start.line || (completionPositionLine === tokenRange.start.line && completionPositionCharacter < tokenRange.start.column)) {
 					//console.log("AFTER", previousAfter)
 					generate(previousAfter)
 					positionAlreadyFound = true
 					return
 				}
-				if (line < range.end.line || (line === range.end.line && character < range.end.column - 1)) {
+				if (completionPositionLine < tokenRange.end.line || (completionPositionLine === tokenRange.end.line && completionPositionCharacter < tokenRange.end.column)) {
 					//console.log("INTRA", intra)
 					generate(intra)
 					positionAlreadyFound = true
