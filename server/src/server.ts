@@ -21,7 +21,7 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import * as astn from './astn'
+import * as astn from './astnWrappers'
 import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
 import { makeNativeHTTPrequest} from "astn/dist/src/makeNativeHTTPrequest"
 

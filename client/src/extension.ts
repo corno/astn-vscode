@@ -13,7 +13,7 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
-import * as astn from './astn';
+import * as astn from './astnWrappers';
 
 let client: LanguageClient;
 
