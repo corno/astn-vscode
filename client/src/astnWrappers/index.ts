@@ -1,4 +1,6 @@
 import * as astn from 'astn'
+import * as p20 from 'pareto-20'
+import * as p from "pareto"
 
 export * from "astn"
 
@@ -8,27 +10,37 @@ export function format(
 	del: (range: astn.Range) => void,
 	insert: (location: astn.Location, newValue: string) => void,
 ) {
-	return new Promise(resolve => {
-		const formatter = astn.createFormatter(
-			replace,
-			del,
-			insert,
-			resolve
-		)
-		const parser = new astn.Parser(
-			() => {
-				//ignore errors
+	const formatter = astn.createFormatter(
+		replace,
+		del,
+		insert,
+		() => {
+			return p.result(null)
+		}
+	)
+	const parser = astn.createParser(
+		() => {
+			//ignore errors
+		},
+		{
+			onHeaderStart: () => {
+				return formatter
+			},
+			onCompact: () => {
+
+			},
+			onHeaderEnd: () => {
+				return formatter
 			}
-		)
-		parser.ondata.subscribe(formatter)
-		parser.onschemadata.subscribe(formatter)
-		astn.tokenizeString(
+		}
+	)
+	return p20.createArray([documentContent]).streamify().toUnsafeValue(
+		null,
+		astn.createStreamTokenizer(
 			parser,
 			() => {
 				//ignore errors
 			},
-			documentContent
 		)
-
-	})
+	).convertToNativePromise(() => "something went wrong")
 }

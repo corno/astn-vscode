@@ -22,7 +22,7 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astnWrappers'
-import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
+import { readFileFromFileSystem } from "astn/dist/src/readFileFromFileSystem"
 import { makeNativeHTTPrequest} from "astn/dist/src/makeNativeHTTPrequest"
 
 import { URI } from "vscode-uri"
@@ -158,7 +158,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		text,
 		uri.fsPath,
 		makeNativeHTTPrequest,
-		readSchemaFileFromFileSystem,
+		readFileFromFileSystem,
 		astnDiagnostic => {
 			const range: Range = astnDiagnostic.range === null
 				? {
@@ -195,7 +195,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		schema => {
 			return astn.createInMemoryDataset(schema)
 		}
-	).convertToNativePromise().then(() => {
+	).convertToNativePromise(() => {
+		return "something went wrong"
+	}).then(() => {
 		connection.sendDiagnostics({
 			uri: textDocument.uri,
 			diagnostics: diagnostics,

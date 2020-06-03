@@ -1,5 +1,5 @@
 import * as astn from "astn"
-import { readSchemaFileFromFileSystem } from "astn/dist/src/readSchemaFileFromFileSystem"
+import { readFileFromFileSystem } from "astn/dist/src/readFileFromFileSystem"
 import { URI } from 'vscode-uri'
 import { makeNativeHTTPrequest } from 'astn/dist/src/makeNativeHTTPrequest'
 
@@ -23,7 +23,7 @@ export function onCompletion(
 		content,
 		filePath,
 		makeNativeHTTPrequest,
-		readSchemaFileFromFileSystem,
+		readFileFromFileSystem,
 		() => {
 			//
 		},
@@ -39,6 +39,6 @@ export function onCompletion(
 		schema => {
 			return astn.createInMemoryDataset(schema)
 		}
-	).convertToNativePromise().then(() => {
+	).convertToNativePromise(() => "something went wrong").then(() => {
 	})
 }
