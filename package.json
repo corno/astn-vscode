@@ -85,7 +85,7 @@
 		"@types/node": "^14.0.9"
 	},
 	"dependencies": {
-		"astn": "^0.35.0",
+		"astn": "^0.35.1",
 		"vscode-uri": "^2.1.2"
 	}
 }
