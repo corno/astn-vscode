@@ -203,7 +203,7 @@
 			"name": "string.quoted.double.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#quoted-string-content"
 				}
 			]
 		},
@@ -223,7 +223,7 @@
 			"name": "string.astn support.type.apostrophed-string.other.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#apostrophed-string-content"
 				}
 			]
 		},
@@ -243,7 +243,7 @@
 			"name": "string.astn support.type.apostrophed-string.other.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#apostrophed-string-content"
 				}
 			]
 		},
@@ -266,7 +266,7 @@
 			"name": "keyword.operator.logical.tagged-union.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#quoted-string-content"
 				}
 			]
 		},
@@ -289,7 +289,7 @@
 			"name": "keyword.operator.logical.tagged-union.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#apostrophed-string-content"
 				}
 			]
 		},
@@ -312,7 +312,7 @@
 			"name": "string.quoted.single.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#quoted-string-content"
 				}
 			]
 		},
@@ -335,7 +335,7 @@
 			"name": "variable.other.key-in-dictionary.astn",
 			"patterns": [
 				{
-					"include": "#stringcontent"
+					"include": "#apostrophed-string-content"
 				}
 			]
 		},
@@ -369,10 +369,22 @@
 			},
 			"name": "keyword.other.apostrophed-key-in-type.astn"
 		},
-		"stringcontent": {
+		"quoted-string-content": {
 			"patterns": [
 				{
 					"match": "(?x)                # turn on extended mode\n  \\\\                # a literal backslash\n  (?:               # ...followed by...\n    [\"\\\\/bfnrt]     # one of these characters\n    |               # ...or...\n    u               # a u\n    [0-9a-fA-F]{4}) # and four hex digits",
+					"name": "constant.character.escape.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "invalid.illegal.unrecognized-string-escape.astn"
+				}
+			]
+		},
+		"apostrophed-string-content": {
+			"patterns": [
+				{
+					"match": "(?x)                # turn on extended mode\n  \\\\                # a literal backslash\n  (?:               # ...followed by...\n    ['\\\\/bfnrt]     # one of these characters\n    |               # ...or...\n    u               # a u\n    [0-9a-fA-F]{4}) # and four hex digits",
 					"name": "constant.character.escape.astn"
 				},
 				{
