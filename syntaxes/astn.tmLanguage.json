@@ -355,7 +355,7 @@
 			"name": "keyword.other.quoted-key-in-type.astn"
 		},
 		"apostrophed-key-in-type": {
-			"match": "(')[^\"]*(')\\s*(:)",
+			"match": "(')[^']*(')\\s*(:)",
 			"captures": {
 				"1": {
 					"name": "punctuation.definition.string.apostrophed-key-in-type.begin.astn"
