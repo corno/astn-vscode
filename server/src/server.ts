@@ -169,7 +169,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				}
 				: {
 					start: textDocument.positionAt(astnDiagnostic.range.start.position),
-					end: textDocument.positionAt(astnDiagnostic.range.end.position),
+					end: textDocument.positionAt(astn.getEndLocationFromRange(astnDiagnostic.range).position),
 				}
 
 			let diagnostic: Diagnostic = {

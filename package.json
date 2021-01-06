@@ -80,12 +80,12 @@
 		"update2latest": "ncu -u --packageFile package.json && nsi"
 	},
 	"devDependencies": {
-		"@types/mocha": "^7.0.2",
-		"mocha": "^7.2.0",
-		"@types/node": "^14.0.9"
+		"@types/mocha": "^8.2.0",
+		"mocha": "^8.2.1",
+		"@types/node": "^14.14.20"
 	},
 	"dependencies": {
-		"astn": "^0.35.1",
-		"vscode-uri": "^2.1.2"
+		"astn": "^0.38.0",
+		"vscode-uri": "^3.0.2"
 	}
 }

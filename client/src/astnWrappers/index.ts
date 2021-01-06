@@ -11,6 +11,7 @@ export function format(
 	insert: (location: astn.Location, newValue: string) => void,
 ) {
 	const formatter = astn.createFormatter(
+		"    ",
 		replace,
 		del,
 		insert,
@@ -18,29 +19,25 @@ export function format(
 			return p.result(null)
 		}
 	)
-	const parser = astn.createParser(
+	const parserStack = astn.createParserStack(
+		() => {
+			return formatter
+		},
+		() => {
+			return formatter
+		},
 		() => {
 			//ignore errors
 		},
-		{
-			onHeaderStart: () => {
-				return formatter
-			},
-			onCompact: () => {
-
-			},
-			onHeaderEnd: () => {
-				return formatter
-			}
-		}
+		() => {
+			//ignore errors
+		},
+		() => {
+			return p.result(null)
+		},
 	)
 	return p20.createArray([documentContent]).streamify().toUnsafeValue(
 		null,
-		astn.createStreamTokenizer(
-			parser,
-			() => {
-				//ignore errors
-			},
-		)
+		parserStack,
 	).convertToNativePromise(() => "something went wrong")
 }

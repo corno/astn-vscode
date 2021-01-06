@@ -6,6 +6,10 @@
 import * as path from 'path';
 import { workspace, ExtensionContext, } from 'vscode';
 import * as vscode from "vscode"
+import * as astn from "astn"
+import {
+	format
+} from "../src/astnWrappers"
 
 import {
 	LanguageClient,
@@ -13,7 +17,6 @@ import {
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
-import * as astn from './astnWrappers';
 
 let client: LanguageClient;
 
@@ -22,14 +25,14 @@ function convertLocation(document: vscode.TextDocument, location: astn.Location)
 }
 
 function convertRange(document: vscode.TextDocument, range: astn.Range) {
-	return new vscode.Range(convertLocation(document, range.start), convertLocation(document, range.end))
+	return new vscode.Range(convertLocation(document, range.start), convertLocation(document, astn.getEndLocationFromRange(range)))
 }
 
 // formatter implemented using API
 vscode.languages.registerDocumentFormattingEditProvider('astn', {
 	provideDocumentFormattingEdits(document: vscode.TextDocument) {
 		const edits: vscode.TextEdit[] = []
-		return astn.format(
+		return format(
 			document.getText(),
 			(range, newValue) => {
 				edits.push(vscode.TextEdit.replace(
