@@ -22,8 +22,8 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 import * as astn from './astnWrappers'
-import { readFileFromFileSystem } from "astn/dist/src/readFileFromFileSystem"
-import { makeNativeHTTPrequest} from "astn/dist/src/makeNativeHTTPrequest"
+import { readFileFromFileSystem } from "./astnWrappers/readFileFromFileSystem"
+import { makeNativeHTTPrequest} from "./astnWrappers/makeNativeHTTPrequest"
 
 import { URI } from "vscode-uri"
 
@@ -169,7 +169,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				}
 				: {
 					start: textDocument.positionAt(astnDiagnostic.range.start.position),
-					end: textDocument.positionAt(astnDiagnostic.range.end.position),
+					end: textDocument.positionAt(astn.getEndLocationFromRange(astnDiagnostic.range).position),
 				}
 
 			let diagnostic: Diagnostic = {

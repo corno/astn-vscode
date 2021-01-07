@@ -1,7 +1,7 @@
 import * as astn from "astn"
-import { readFileFromFileSystem } from "astn/dist/src/readFileFromFileSystem"
+import { readFileFromFileSystem } from "./readFileFromFileSystem"
 import { URI } from 'vscode-uri'
-import { makeNativeHTTPrequest } from 'astn/dist/src/makeNativeHTTPrequest'
+import { makeNativeHTTPrequest } from './makeNativeHTTPrequest'
 
 export function onCompletion(
 	uri: string,

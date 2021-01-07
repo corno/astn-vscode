@@ -22,7 +22,7 @@ function convertLocation(document: vscode.TextDocument, location: astn.Location)
 }
 
 function convertRange(document: vscode.TextDocument, range: astn.Range) {
-	return new vscode.Range(convertLocation(document, range.start), convertLocation(document, range.end))
+	return new vscode.Range(convertLocation(document, range.start), convertLocation(document, astn.getEndLocationFromRange(range)))
 }
 
 // formatter implemented using API
