@@ -3,7 +3,7 @@
 	"description": "language support for ASTN (Abstract Syntax Tree Notation, pronounced Aston')",
 	"author": "corno",
 	"license": "MIT",
-	"version": "1.16.2",
+	"version": "1.16.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/corno/astn-vscode"
