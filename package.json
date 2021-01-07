@@ -74,7 +74,7 @@
 		"watch": "rm -rf ./server/out && rm -rf ./client/out && tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
 		"test": "## sh ./scripts/e2e.sh",
-		"validatePublishReadiness": "git diff --exit-code && ncu -u --packageFile package.json && npm install && npm run build",
+		"validatePublishReadiness": "git diff --exit-code && npm install && npm run build",
 		"pubMin": "npm run validatePublishReadiness && npm version minor && git push && vsce publish",
 		"pubPatch": "npm run validatePublishReadiness && npm version patch && git push && vsce publish",
 		"update2latest": "ncu -u --packageFile package.json && nsi"
