@@ -9,7 +9,7 @@ import * as vscode from "vscode"
 import * as astn from "astn"
 import {
 	format
-} from "../src/astnWrappers"
+} from "./astnWrappers"
 
 import {
 	LanguageClient,
