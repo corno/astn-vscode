@@ -21,11 +21,13 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import * as astn from './astnWrappers'
-import { readFileFromFileSystem } from "./astnWrappers/readFileFromFileSystem"
-import { makeNativeHTTPrequest} from "./astnWrappers/makeNativeHTTPrequest"
+import * as db5 from './db5Wrappers'
+import { readFileFromFileSystem } from "./db5Wrappers/readFileFromFileSystem"
+import { makeNativeHTTPrequest } from "./db5Wrappers/makeNativeHTTPrequest"
 
 import { URI } from "vscode-uri"
+import { schemaHost } from './schemaHost';
+import { printLoadDocumentDiagnostic } from './db5Wrappers';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -142,40 +144,68 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document)
 });
 
+function assertUnreachable<RT>(_x: never): RT {
+	throw new Error("unreachable")
+}
+
+function getRange(astnDiagnostic: db5.LoadDocumentDiagnostic): db5.Range | null {
+	switch (astnDiagnostic.type[0]) {
+		case "deserialization": {
+			const $ = astnDiagnostic.type[1]
+			return $.range
+		}
+		case "schema retrieval": {
+			return null
+		}
+		case "structure": {
+			return null
+		}
+		case "validation": {
+			const $ = astnDiagnostic.type[1]
+			return $.range
+		}
+		default:
+			return assertUnreachable(astnDiagnostic.type[0])
+	}
+}
+
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	let settings = await getDocumentSettings(textDocument.uri);
 
 	// The validator creates diagnostics for all uppercase words length 2 and more
 	let text = textDocument.getText();
- 
+
 	let diagnostics: Diagnostic[] = [];
 
 	const uri = URI.parse(textDocument.uri)
 
 
-	astn.loadDocument(
+	db5.loadDocument(
+		schemaHost,
 		text,
 		uri.fsPath,
 		makeNativeHTTPrequest,
 		readFileFromFileSystem,
 		astnDiagnostic => {
-			const range: Range = astnDiagnostic.range === null
+
+			const tempRange = getRange(astnDiagnostic)
+			const range: Range = tempRange === null
 				? {
 					start: textDocument.positionAt(0),
-					end: astnDiagnostic.severity === astn.DiagnosticSeverity.warning
+					end: astnDiagnostic.severity === db5.DiagnosticSeverity.warning
 						? textDocument.positionAt(0) //don't pollute the whole view for just a warning
 						: textDocument.positionAt(text.length - 1)
 				}
 				: {
-					start: textDocument.positionAt(astnDiagnostic.range.start.position),
-					end: textDocument.positionAt(astn.getEndLocationFromRange(astnDiagnostic.range).position),
+					start: textDocument.positionAt(tempRange.start.position),
+					end: textDocument.positionAt(db5.getEndLocationFromRange(tempRange).position),
 				}
 
 			let diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Warning,
 				range: range,
-				message: astnDiagnostic.message,
+				message: printLoadDocumentDiagnostic(astnDiagnostic),
 				source: 'astn'
 			};
 			if (hasDiagnosticRelatedInformationCapability) {
@@ -183,9 +213,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 					{
 						location: {
 							uri: textDocument.uri,
-							range: Object.assign({}, diagnostic.range)
+							range: range
 						},
-						message: astnDiagnostic.message
+						message: printLoadDocumentDiagnostic(astnDiagnostic)
 					},
 				];
 			}
@@ -193,7 +223,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		},
 		[],
 		schema => {
-			return astn.createInMemoryDataset(schema)
+			return db5.createInMemoryDataset(schema)
 		}
 	).convertToNativePromise(() => {
 		return "something went wrong"
@@ -229,7 +259,7 @@ connection.onCompletion(
 		if (doc === undefined) {
 			return []
 		}
-		return astn.onCompletion(
+		return db5.onCompletion(
 			textDocumentPosition.textDocument.uri,
 			textDocumentPosition.position.line + 1, //astn's line numbering is 1 based, vscode's is 0 based
 			textDocumentPosition.position.character + 1, //astn's character numbering is 1 based, vscode's is 0 based
@@ -251,7 +281,7 @@ connection.onCompletion(
 // the completion list.
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
-		const details = astn.onCompletionResolve(item.data)
+		const details = db5.onCompletionResolve(item.data)
 		item.detail = details.detail
 		item.documentation = details.documentation
 		return item;

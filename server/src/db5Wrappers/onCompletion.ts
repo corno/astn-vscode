@@ -1,7 +1,8 @@
-import * as astn from "astn"
+import * as db5 from "db5"
 import { readFileFromFileSystem } from "./readFileFromFileSystem"
 import { URI } from 'vscode-uri'
 import { makeNativeHTTPrequest } from './makeNativeHTTPrequest'
+import { schemaHost } from '../schemaHost'
 
 export function onCompletion(
 	uri: string,
@@ -19,7 +20,8 @@ export function onCompletion(
 
 	const filePath = parsedURI.fsPath
 
-	return astn.loadDocument(
+	return db5.loadDocument(
+		schemaHost,
 		content,
 		filePath,
 		makeNativeHTTPrequest,
@@ -28,7 +30,7 @@ export function onCompletion(
 			//
 		},
 		[
-			astn.createSnippetFinder(
+			db5.createSnippetFinder(
 				completionPositionLine,
 				completionPositionCharacter,
 				snippet => {
@@ -37,7 +39,7 @@ export function onCompletion(
 			)
 		],
 		schema => {
-			return astn.createInMemoryDataset(schema)
+			return db5.createInMemoryDataset(schema)
 		}
 	).convertToNativePromise(() => "something went wrong").then(() => {
 	})

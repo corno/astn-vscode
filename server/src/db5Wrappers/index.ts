@@ -1,6 +1,6 @@
 export * from "./onCompletion"
 export * from "./onCompletionResolve"
-export * from "astn"
+export * from "db5"
 
 import * as fs from "fs"
 import * as path from "path"
