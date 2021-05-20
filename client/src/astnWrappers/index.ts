@@ -1,14 +1,14 @@
-import * as db5 from 'db5'
+import * as astn from 'astn'
 import * as p20 from 'pareto-20'
 import * as p from "pareto"
 
 export function format(
 	documentContent: string,
-	replace: (range: db5.Range, newValue: string) => void,
-	del: (range: db5.Range) => void,
-	insert: (location: db5.Location, newValue: string) => void,
+	replace: (range: astn.Range, newValue: string) => void,
+	del: (range: astn.Range) => void,
+	insert: (location: astn.Location, newValue: string) => void,
 ) {
-	const formatter = db5.createFormatter(
+	const formatter = astn.createFormatter(
 		"    ",
 		replace,
 		del,
@@ -17,7 +17,7 @@ export function format(
 			return p.value(null)
 		}
 	)
-	const parserStack = db5.createParserStack(
+	const parserStack = astn.createParserStack(
 		() => {
 			return formatter
 		},

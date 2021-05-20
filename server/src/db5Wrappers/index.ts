@@ -1,6 +1,17 @@
 export * from "./onCompletion"
 export * from "./onCompletionResolve"
-export * from "db5"
+export * from "./onHover"
+export {
+	createInMemoryDataset,
+	DiagnosticSeverity,
+	loadDocument,
+	LoadDocumentDiagnostic,
+	printLoadDocumentDiagnostic,
+} from "db5"
+export {
+	getEndLocationFromRange,
+	Range,
+} from "astn"
 
 import * as fs from "fs"
 import * as path from "path"

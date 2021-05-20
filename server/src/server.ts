@@ -16,12 +16,13 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	Range,
+	Hover,
 } from 'vscode-languageserver';
 
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import * as db5 from './db5Wrappers'
+import * as db5wrappers from './db5Wrappers'
 import { readFileFromFileSystem } from "./db5Wrappers/readFileFromFileSystem"
 import { makeNativeHTTPrequest } from "./db5Wrappers/makeNativeHTTPrequest"
 
@@ -60,6 +61,7 @@ connection.onInitialize((params: InitializeParams) => {
 
 	const result: InitializeResult = {
 		capabilities: {
+			hoverProvider: true,
 			textDocumentSync: TextDocumentSyncKind.Full,
 			// Tell the client that the server supports code completion
 			completionProvider: {
@@ -148,7 +150,7 @@ function assertUnreachable<RT>(_x: never): RT {
 	throw new Error("unreachable")
 }
 
-function getRange(astnDiagnostic: db5.LoadDocumentDiagnostic): db5.Range | null {
+function getRange(astnDiagnostic: db5wrappers.LoadDocumentDiagnostic): db5wrappers.Range | null {
 	switch (astnDiagnostic.type[0]) {
 		case "deserialization": {
 			const $ = astnDiagnostic.type[1]
@@ -181,7 +183,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const uri = URI.parse(textDocument.uri)
 
 
-	db5.loadDocument(
+	db5wrappers.loadDocument(
 		schemaHost,
 		text,
 		uri.fsPath,
@@ -193,13 +195,13 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			const range: Range = tempRange === null
 				? {
 					start: textDocument.positionAt(0),
-					end: astnDiagnostic.severity === db5.DiagnosticSeverity.warning
+					end: astnDiagnostic.severity === db5wrappers.DiagnosticSeverity.warning
 						? textDocument.positionAt(0) //don't pollute the whole view for just a warning
 						: textDocument.positionAt(text.length - 1)
 				}
 				: {
 					start: textDocument.positionAt(tempRange.start.position),
-					end: textDocument.positionAt(db5.getEndLocationFromRange(tempRange).position),
+					end: textDocument.positionAt(db5wrappers.getEndLocationFromRange(tempRange).position),
 				}
 
 			let diagnostic: Diagnostic = {
@@ -223,7 +225,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		},
 		[],
 		schema => {
-			return db5.createInMemoryDataset(schema)
+			return db5wrappers.createInMemoryDataset(schema)
 		}
 	).convertToNativePromise(() => {
 		return "something went wrong"
@@ -250,7 +252,7 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
-	(textDocumentPosition, x, y, z) => {
+	(textDocumentPosition, cancellationToken, workDoneProgress, resultProgress) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested.
 
@@ -259,7 +261,7 @@ connection.onCompletion(
 		if (doc === undefined) {
 			return []
 		}
-		return db5.onCompletion(
+		return db5wrappers.onCompletion(
 			textDocumentPosition.textDocument.uri,
 			textDocumentPosition.position.line + 1, //astn's line numbering is 1 based, vscode's is 0 based
 			textDocumentPosition.position.character + 1, //astn's character numbering is 1 based, vscode's is 0 based
@@ -277,11 +279,39 @@ connection.onCompletion(
 	}
 );
 
+// This handler provides the initial list of the completion items.
+connection.onHover(
+	(hoverParams, cancellationToken, workdoneProgress, resultProgress) => {
+		// The pass parameter contains the position of the text document in
+		// which code complete got requested.
+
+		const hoverTexts: string[] = []
+		const doc = documents.get(hoverParams.textDocument.uri)
+		if (doc === undefined) {
+			return null
+		}
+		return db5wrappers.onHover(
+			hoverParams.textDocument.uri,
+			hoverParams.position.line + 1, //astn's line numbering is 1 based, vscode's is 0 based
+			hoverParams.position.character + 1, //astn's character numbering is 1 based, vscode's is 0 based
+			doc.getText(),
+			hoverText => {
+				hoverTexts.push(hoverText)
+			},
+		).then(() => {
+			const hv: Hover = {
+				contents: hoverTexts
+			}
+			return hv
+		})
+	}
+);
+
 // This handler resolves additional information for the item selected in
 // the completion list.
 connection.onCompletionResolve(
 	(item: CompletionItem): CompletionItem => {
-		const details = db5.onCompletionResolve(item.data)
+		const details = db5wrappers.onCompletionResolve(item.data)
 		item.detail = details.detail
 		item.documentation = details.documentation
 		return item;
