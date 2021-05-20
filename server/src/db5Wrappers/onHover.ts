@@ -29,7 +29,7 @@ export function onHover(
 			//
 		},
 		[
-			db5.createSnippetFinder(
+			db5.createHoverTextFinder(
 				positionLine,
 				positionCharacter,
 				hover => {
