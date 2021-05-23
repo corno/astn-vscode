@@ -30,7 +30,7 @@ export function onCompletion(
 			//
 		},
 		[
-			db5.createSnippetFinder(
+			db5.createCodeCompletionFinder(
 				completionPositionLine,
 				completionPositionCharacter,
 				snippet => {
