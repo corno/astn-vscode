@@ -81,11 +81,11 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^8.2.2",
-		"@types/node": "^15.3.1",
+		"@types/node": "^15.6.0",
 		"mocha": "^8.4.0"
 	},
 	"dependencies": {
-		"db5": "^0.6.7",
+		"db5": "^0.6.8",
 		"vscode-uri": "^3.0.2"
 	}
 }
