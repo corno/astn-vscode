@@ -183,7 +183,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const uri = URI.parse(textDocument.uri)
 
 
-	db5wrappers.loadDocument(
+	db5wrappers.deserializeTextIntoDataset(
 		schemaHost,
 		text,
 		uri.fsPath,

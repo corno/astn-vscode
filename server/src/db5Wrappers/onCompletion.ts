@@ -20,7 +20,7 @@ export function onCompletion(
 
 	const filePath = parsedURI.fsPath
 
-	return db5.loadDocument(
+	return db5.deserializeTextIntoDataset(
 		schemaHost,
 		content,
 		filePath,

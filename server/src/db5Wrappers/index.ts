@@ -4,7 +4,7 @@ export * from "./onHover"
 export {
 	createInMemoryDataset,
 	DiagnosticSeverity,
-	loadDocument,
+	deserializeTextIntoDataset,
 	LoadDocumentDiagnostic,
 	printLoadDocumentDiagnostic,
 } from "db5"
