@@ -1,8 +1,7 @@
 import * as db5 from "db5"
 import { readFileFromFileSystem } from "./readFileFromFileSystem"
 import { URI } from 'vscode-uri'
-import { makeNativeHTTPrequest } from './makeNativeHTTPrequest'
-import { schemaHost } from '../schemaHost'
+import { resolveExternalSchema } from './resolveExternalSchema'
 
 export function onCompletion(
 	uri: string,
@@ -21,11 +20,12 @@ export function onCompletion(
 	const filePath = parsedURI.fsPath
 
 	return db5.deserializeTextIntoDataset(
-		schemaHost,
+		{
+			filePath: filePath,
+			getContextSchema: readFileFromFileSystem,
+		},
 		content,
-		filePath,
-		makeNativeHTTPrequest,
-		readFileFromFileSystem,
+		resolveExternalSchema,
 		() => {
 			//
 		},

@@ -1,4 +1,4 @@
-import { SchemaHost } from 'db5'
+import { SchemaHost, RetrievalError } from 'db5'
 import * as http from "http"
 import * as p from "pareto"
 import * as p20 from "pareto-20"
@@ -13,7 +13,7 @@ export function makeNativeHTTPrequest(
     schemaHost: SchemaHost,
     schema:string,
     timeout: number
-): p.IUnsafeValue<p.IStream<string, null>, string> {
+): p.IUnsafeValue<p.IStream<string, null>, RetrievalError> {
     return p20.wrapUnsafeFunction((onError, onSucces) => {
 
         const path = `${schemaHost.pathStart}/${encodeURI(schema)}`.replace(/\/\//g, "/")
@@ -25,7 +25,7 @@ export function makeNativeHTTPrequest(
             },
             res => {
                 if (res.statusCode !== 200) {
-                    onError(`'${path}' not found`)
+                    onError(["not found", {}])
                     return
                 }
                 //below code is streaming but unstable
@@ -65,11 +65,11 @@ export function makeNativeHTTPrequest(
         )
         request.on('timeout', () => {
             console.error("timeout")
-            onError("timeout")
+            onError(["other", { description: "timeout"}])
         });
         request.on('error', e => {
             console.error(e.message)
-            onError(e.message)
+            onError(["other", { description: e.message}])
         });
         request.end()
     })

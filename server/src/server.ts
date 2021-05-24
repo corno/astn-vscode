@@ -24,10 +24,9 @@ import {
 } from 'vscode-languageserver-textdocument';
 import * as db5wrappers from './db5Wrappers'
 import { readFileFromFileSystem } from "./db5Wrappers/readFileFromFileSystem"
-import { makeNativeHTTPrequest } from "./db5Wrappers/makeNativeHTTPrequest"
 
 import { URI } from "vscode-uri"
-import { schemaHost } from './schemaHost';
+import { resolveExternalSchema } from './db5Wrappers/resolveExternalSchema';
 import { printLoadDocumentDiagnostic } from './db5Wrappers';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -184,11 +183,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 
 	db5wrappers.deserializeTextIntoDataset(
-		schemaHost,
+		{
+			filePath: uri.fsPath,
+			getContextSchema: readFileFromFileSystem
+		},
 		text,
-		uri.fsPath,
-		makeNativeHTTPrequest,
-		readFileFromFileSystem,
+		resolveExternalSchema,
 		astnDiagnostic => {
 
 			const tempRange = getRange(astnDiagnostic)

@@ -8,7 +8,7 @@ import * as db5 from "db5"
 export function readFileFromFileSystem(
 	dir: string,
 	schemaFileName: string,
-): p.IUnsafeValue<p.IStream<string, null>, db5.FileError> {
+): p.IUnsafeValue<p.IStream<string, null>, db5.RetrievalError> {
 	return p20.wrapUnsafeFunction((onError, onSuccess) => {
 		fs.readFile(
 			path.join(dir, schemaFileName),
@@ -19,9 +19,9 @@ export function readFileFromFileSystem(
 				} else {
 					if (err.code === "ENOENT") {
 						//there is no schema file
-						onError(db5.FileError.FileNotFound)
+						onError(["not found", {}])
 					} else {
-						onError(db5.FileError.UnknownError)
+						onError(["other", { description: err.message }])
 					}
 				}
 			}
