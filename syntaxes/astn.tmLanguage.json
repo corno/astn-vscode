@@ -53,6 +53,10 @@
 				},
 				{
 					"include": "#apostrophed-string"
+				},
+				{
+					"match": "\\|",
+					"name": "punctuation.separator.taggedunion.astn"
 				}
 			]
 		},
@@ -117,7 +121,7 @@
 				},
 				{
 					"match": ",",
-					"name": "punctuation.separator.list.astn"
+					"name": "punctuation.separator.comma.list.astn"
 				},
 				{
 					"match": "[^\\s\\]]",
@@ -145,7 +149,7 @@
 				},
 				{
 					"match": ",",
-					"name": "punctuation.separator.shorthandtype.astn"
+					"name": "punctuation.separator.comma.shorthandtype.astn"
 				},
 				{
 					"match": "[^\\s\\]]",
@@ -173,7 +177,11 @@
 				},
 				{
 					"match": ",",
-					"name": "punctuation.separator.dictionary.astn"
+					"name": "punctuation.separator.comma.dictionary.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.dictionary.astn"
 				},
 				{
 					"match": "[^\\s\\}]",
@@ -201,7 +209,11 @@
 				},
 				{
 					"match": ",",
-					"name": "punctuation.separator.verbosetype.astn"
+					"name": "punctuation.separator.comma.verbosetype.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.verbosetype.astn"
 				},
 				{
 					"match": "[^\\s\\}]",
