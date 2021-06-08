@@ -1,6 +1,9 @@
 # TODO: documentation
 
 for better syntax highlighting, add this to your settings.json file:
+-CMD/CTRL + SHIFT + P 
+-Open Settings (JSON)
+
 ```` JSON
 
     "editor.tokenColorCustomizations": {
@@ -8,27 +11,21 @@ for better syntax highlighting, add this to your settings.json file:
             {
                 "scope": "string.astn",
                 "settings": {
-                    "foreground": "#48d62c"
+                    "foreground": "#CE9178"
                 }
             },
             {
-                "scope": "support.type.aposthrophed-string.in-type.astn",
+                "scope": "support.type.apostrophed-string.astn",
                 "settings": {
-                    "foreground": "#272796"
+                    "foreground": "#9CDCFE"
                 }
             },
             {
-                "scope": "support.type.aposthrophed-string.other.astn",
+                "scope": "support.type.backticked-string.astn",
                 "settings": {
-                    "foreground": "#6d2121"
+                    "foreground": "#cea978"
                 }
             },
-            {
-                "scope": "support.type.aposthrophed-in-dictionary.astn",
-                "settings": {
-                    "foreground": "#8d1c97"
-                }
-            }
         ]
-    }
+    },
 ````
