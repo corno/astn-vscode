@@ -1,7 +1,7 @@
-import { SchemaHost, RetrievalError } from 'db5'
 import * as http from "http"
 import * as p from "pareto"
 import * as p20 from "pareto-20"
+import * as db5 from "db5"
 
 export type HTTPOptions = {
     host: string
@@ -9,11 +9,18 @@ export type HTTPOptions = {
     timeout: number
 }
 
+
+export type SchemaHost = {
+	host: string
+	pathStart: string
+}
+
+
 export function makeNativeHTTPrequest(
     schemaHost: SchemaHost,
     schema:string,
     timeout: number
-): p.IUnsafeValue<p.IStream<string, null>, RetrievalError> {
+): p.IUnsafeValue<p.IStream<string, null>, db5.RetrievalError> {
     return p20.wrapUnsafeFunction((onError, onSucces) => {
 
         const path = `${schemaHost.pathStart}/${encodeURI(schema)}`.replace(/\/\//g, "/")
