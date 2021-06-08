@@ -53,10 +53,6 @@
 				},
 				{
 					"include": "#apostrophed-string"
-				},
-				{
-					"match": "|",
-					"name": "punctuation.taggedunion.astn"
 				}
 			]
 		},
@@ -180,10 +176,6 @@
 					"name": "punctuation.separator.dictionary.astn"
 				},
 				{
-					"match": ":",
-					"name": "punctuation.colon.dictionary.astn"
-				},
-				{
 					"match": "[^\\s\\}]",
 					"name": "invalid.illegal.expected-dictionary-separator-or-end.astn"
 				}
@@ -210,10 +202,6 @@
 				{
 					"match": ",",
 					"name": "punctuation.separator.verbosetype.astn"
-				},
-				{
-					"match": ":",
-					"name": "punctuation.colon.verbosetype.astn"
 				},
 				{
 					"match": "[^\\s\\}]",
