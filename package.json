@@ -77,7 +77,7 @@
 		"validatePublishReadiness": "git diff --exit-code && npm install && npm run build",
 		"pubMinor": "npm run validatePublishReadiness && npm version minor && git push && vsce publish",
 		"pubPatch": "npm run validatePublishReadiness && npm version patch && git push && vsce publish",
-		"update2latest": "ncu -u --packageFile package.json && nsi",
+		"update2latest": "ncu -u --packageFile package.json && nsi && tsc",
 		"update2latestAndPublishMinor": "npm run validatePublishReadiness && npm run update2latest && npm run test && git commit -am \"u2l\" && npm run pubMinor",
 		"update2latestAndPublishPath": "npm run validatePublishReadiness && npm run update2latest && npm run test && git commit -am \"u2l\" && npm run pubPatch"
 	},
@@ -87,7 +87,7 @@
 		"mocha": "^9.0.0"
 	},
 	"dependencies": {
-		"db5": "^0.6.18",
+		"db5": "^0.6.19",
 		"vscode-uri": "^3.0.2"
 	}
 }
