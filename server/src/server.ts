@@ -145,6 +145,15 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document)
 });
 
+documents.onDidClose(change => {
+	change.document
+
+	connection.sendDiagnostics({
+		uri: change.document.uri,
+		diagnostics: [],
+	})
+})
+
 function assertUnreachable<RT>(_x: never): RT {
 	throw new Error("unreachable")
 }
