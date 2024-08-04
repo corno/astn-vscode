@@ -16,12 +16,15 @@ import {
 	TextDocumentSyncKind,
 	InitializeResult,
 	DocumentDiagnosticReportKind,
+	Position,
 	type DocumentDiagnosticReport
 } from 'vscode-languageserver/node';
 
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
+
+import { $ as be } from "./backend"
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -61,7 +64,8 @@ connection.onInitialize((params: InitializeParams) => {
 			diagnosticProvider: {
 				interFileDependencies: false,
 				workspaceDiagnostics: false
-			}
+			},
+			hoverProvider: true,
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -161,47 +165,33 @@ documents.onDidChangeContent(change => {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
 	// In this simple example we get the settings for every validate run.
-	const settings = await getDocumentSettings(textDocument.uri);
+	return new Promise<Diagnostic[]>((resolve, reject) => {
 
-	// The validator creates diagnostics for all uppercase words length 2 and more
-	const text = textDocument.getText();
-	const pattern = /\b[A-Z]{2,}\b/g;
-	let m: RegExpExecArray | null;
-
-	let problems = 0;
-	const diagnostics: Diagnostic[] = [];
-	while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-		problems++;
-		const diagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(m.index),
-				end: textDocument.positionAt(m.index + m[0].length)
+		be.validateTextDocument(
+			{
+				uri: textDocument.uri,
+				content: textDocument.getText(),
 			},
-			message: `${m[0]} is all uppercase.`,
-			source: 'ex'
-		};
-		if (hasDiagnosticRelatedInformationCapability) {
-			diagnostic.relatedInformation = [
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Spelling matters'
-				},
-				{
-					location: {
-						uri: textDocument.uri,
-						range: Object.assign({}, diagnostic.range)
-					},
-					message: 'Particularly for names'
-				}
-			];
-		}
-		diagnostics.push(diagnostic);
-	}
-	return diagnostics;
+			($) => {
+				resolve($.diagnostics.map(($) => ({
+					severity: (() => {
+						switch ($.severity[0]) {
+							case "error": return DiagnosticSeverity.Error
+							case "warning": return DiagnosticSeverity.Warning
+							case "information": return DiagnosticSeverity.Information
+							case "hint": return DiagnosticSeverity.Hint
+						}
+					})(),
+					message: $.message,
+					range: {
+						start: textDocument.positionAt($.range.start),
+						end: textDocument.positionAt($.range.start + $.range.length)
+					}
+				})))
+	
+			}
+		)
+	})
 }
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -244,6 +234,39 @@ connection.onCompletionResolve(
 		return item;
 	}
 );
+
+connection.onHover(
+	(hoverParams, cancellationToken, workdoneProgress, resultProgress) => {
+		// The pass parameter contains the position of the text document in
+		// which code complete got requested.
+
+		const doc = documents.get(hoverParams.textDocument.uri)
+		if (doc === undefined) {
+			return null
+		}
+
+		return new Promise(
+			(resolve) => {
+				be.onHover(
+					{
+						document: {
+							uri: hoverParams.textDocument.uri,
+							content: doc.getText(),
+						},
+						offset: doc.offsetAt(Position.create(hoverParams.position.line, hoverParams.position.character,)),
+
+					},
+					($) => {
+						resolve({
+							contents: $.hovertexts
+						})
+
+					}
+				)
+			},
+		)
+	}
+)
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
