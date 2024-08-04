@@ -1,0 +1,321 @@
+{
+	"name": "astn",
+	"scopeName": "source.astn",
+	"patterns": [
+		{
+			"match": "!",
+			"name": "punctuation.definition.schema.astn"
+		},
+		{
+			"match": "#",
+			"name": "punctuation.definition.compact.astn"
+		},
+		{
+			"include": "#quoted-string"
+		},
+		{
+			"include": "#value"
+		},
+		{
+			"match": "[^\\s\\}]",
+			"name": "invalid.illegal.unexpected-root-token.astn"
+		}
+	],
+	"repository": {
+		"value": {
+			"patterns": [
+				{
+					"include": "#constant"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#list"
+				},
+				{
+					"include": "#shorthandtype"
+				},
+				{
+					"include": "#dictionary"
+				},
+				{
+					"include": "#verbosetype"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#quoted-string"
+				},
+				{
+					"include": "#backticked-string"
+				},
+				{
+					"include": "#apostrophed-string"
+				},
+				{
+					"match": "\\|",
+					"name": "punctuation.separator.taggedunion.astn"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"begin": "/\\*\\*(?!/)",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"end": "\\*/",
+					"name": "comment.block.documentation.astn"
+				},
+				{
+					"begin": "/\\*",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"end": "\\*/",
+					"name": "comment.block.astn"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.comment.astn"
+						}
+					},
+					"match": "(//).*$\\n?",
+					"name": "comment.line.double-slash.js"
+				}
+			]
+		},
+		"constant": {
+			"match": "\\b(?:true|false|null)\\b",
+			"name": "constant.language.astn"
+		},
+		"number": {
+			"match": "(?x)        # turn on extended mode\n  -?        # an optional minus\n  (?:\n    0       # a zero\n    |       # ...or...\n    [1-9]   # a 1-9 character\n    \\d*     # followed by zero or more digits\n  )\n  (?:\n    (?:\n      \\.    # a period\n      \\d+   # followed by one or more digits\n    )?\n    (?:\n      [eE]  # an e character\n      [+-]? # followed by an option +/-\n      \\d+   # followed by one or more digits\n    )?      # make exponent optional\n  )?        # make decimal portion optional",
+			"name": "constant.numeric.astn"
+		},
+		"list": {
+			"begin": "\\[",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.begin.astn"
+				}
+			},
+			"end": "\\]",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.list.end.astn"
+				}
+			},
+			"name": "meta.structure.list.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.list.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-list-separator-or-end.astn"
+				}
+			]
+		},
+		"shorthandtype": {
+			"begin": "\\<",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.shorthandtype.begin.astn"
+				}
+			},
+			"end": "\\>",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.shorthandtype.end.astn"
+				}
+			},
+			"name": "meta.structure.shorthandtype.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.shorthandtype.astn"
+				},
+				{
+					"match": "[^\\s\\]]",
+					"name": "invalid.illegal.expected-shorthandtype-separator-or-end.astn"
+				}
+			]
+		},
+		"dictionary": {
+			"begin": "\\{",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.begin.astn"
+				}
+			},
+			"end": "\\}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.dictionary.end.astn"
+				}
+			},
+			"name": "meta.structure.dictionary.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.dictionary.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.dictionary.astn"
+				},
+				{
+					"match": "[^\\s\\}]",
+					"name": "invalid.illegal.expected-dictionary-separator-or-end.astn"
+				}
+			]
+		},
+		"verbosetype": {
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.verbosetype.begin.astn"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.verbosetype.end.astn"
+				}
+			},
+			"name": "meta.structure.type.astn",
+			"patterns": [
+				{
+					"include": "#value"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.verbosetype.astn"
+				},
+				{
+					"match": ":",
+					"name": "punctuation.separator.colon.verbosetype.astn"
+				},
+				{
+					"match": "[^\\s\\}]",
+					"name": "invalid.illegal.expected-verbosetype-separator-or-end.astn"
+				}
+			]
+		},
+		"quoted-string": {
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.quote.begin.astn"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.quote.end.astn"
+				}
+			},
+			"name": "string.quoted.double.astn",
+			"patterns": [
+				{
+					"include": "#quoted-string-content"
+				}
+			]
+		},
+		"quoted-string-content": {
+			"patterns": [
+				{
+					"match": "(?x)                # turn on extended mode\n  \\\\                # a literal backslash\n  (?:               # ...followed by...\n    [\"\\\\/bfnrt]     # one of these characters\n    |               # ...or...\n    u               # a u\n    [0-9a-fA-F]{4}) # and four hex digits",
+					"name": "constant.character.escape.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "invalid.illegal.unrecognized-string-escape.astn"
+				}
+			]
+		},
+		"apostrophed-string": {
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed-string.astn"
+				}
+			},
+			"end": "'",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.support.type.apostrophed-string.astn"
+				}
+			},
+			"name": "string.astn support.type.apostrophed-string.astn",
+			"patterns": [
+				{
+					"include": "#apostrophed-string-content"
+				}
+			]
+		},
+		"apostrophed-string-content": {
+			"patterns": [
+				{
+					"match": "(?x)                # turn on extended mode\n  \\\\                # a literal backslash\n  (?:               # ...followed by...\n    ['\\\\/bfnrt]     # one of these characters\n    |               # ...or...\n    u               # a u\n    [0-9a-fA-F]{4}) # and four hex digits",
+					"name": "constant.character.escape.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "invalid.illegal.unrecognized-string-escape.astn"
+				}
+			]
+		},
+		"backticked-string": {
+			"begin": "`",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.support.type.backticked-string.astn"
+				}
+			},
+			"end": "`",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.support.type.backticked-string.astn"
+				}
+			},
+			"name": "string.astn support.type.backticked-string.astn",
+			"patterns": [
+				{
+					"include": "#backticked-string-content"
+				}
+			]
+		},
+		"backticked-string-content": {
+			"patterns": [
+				{
+					"match": "(?x)                # turn on extended mode\n  \\\\                # a literal backslash\n  (?:               # ...followed by...\n    [`\\\\/bfnrt]     # one of these characters\n    |               # ...or...\n    u               # a u\n    [0-9a-fA-F]{4}) # and four hex digits",
+					"name": "constant.character.escape.astn"
+				},
+				{
+					"match": "\\\\.",
+					"name": "invalid.illegal.unrecognized-string-escape.astn"
+				}
+			]
+		}
+	}
+}
