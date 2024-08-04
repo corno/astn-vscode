@@ -1,14 +1,14 @@
 {
-	"name": "lsp-sample",
+	"name": "astn-dev",
 	"description": "A language server example",
-	"author": "Microsoft Corporation",
+	"author": "Corno",
 	"license": "MIT",
-	"version": "1.0.0",
+	"version": "1.20.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
-	"publisher": "vscode-samples",
+	"publisher": "Corno",
 	"categories": [],
 	"keywords": [
 		"multi-root ready"
