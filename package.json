@@ -63,7 +63,17 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
-		}
+		},
+		"commands": [
+			{
+			  "command": "astn.convertToJSON",
+			  "title": "convert ASTN to JSON"
+			},
+			{
+			  "command": "astn.saveAsJSON",
+			  "title": "save as JSON file"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
